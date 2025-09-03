@@ -1,0 +1,193 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CultureConnect NG - A platform showcasing Nigerian cultural heritage and fostering collaboration among young creatives.">
+  <title>CultureConnect NG - Portfolio</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+    body {
+      line-height: 1.6;
+      color: #333;
+    }
+    header {
+      background: #1a3c34;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    nav {
+      background: #2e5e4e;
+      padding: 1rem;
+    }
+    nav a {
+      color: white;
+      margin: 0 1rem;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    section {
+      margin-bottom: 2rem;
+    }
+    h2 {
+      color: #1a3c34;
+      margin-bottom: 1rem;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+    .gallery img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .gallery img:hover {
+      opacity: 0.9;
+    }
+    .forum-placeholder {
+      background: #f4f4f4;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+    footer {
+      background: #1a3c34;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      position: relative;
+      bottom: 0;
+      width: 100%;
+    }
+    @media (max-width: 768px) {
+      nav a {
+        display: block;
+        margin: 0.5rem 0;
+      }
+      .container {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>CultureConnect NG</h1>
+    <p>A Web Platform for Nigerian Cultural Heritage and Creative Collaboration</p>
+  </header>
+  <nav>
+    <a href="#about">About</a>
+    <a href="#features">Features</a>
+    <a href="#impact">Impact</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#forum">Forum</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <div class="container">
+    <section id="about">
+      <h2>About CultureConnect NG</h2>
+      <p>CultureConnect NG is a web platform dedicated to showcasing Nigerian cultural heritage through art, music, and stories while providing a space for young creatives to collaborate, learn, and share their work. This non-profit initiative promotes cultural preservation and fosters a vibrant creative ecosystem.</p>
+    </section>
+    <section id="features">
+      <h2>Key Features</h2>
+      <ul>
+        <li>Interactive galleries showcasing Nigerian art and music.</li>
+        <li>A forum for creatives to connect and collaborate.</li>
+        <li>Free tutorials for youth to learn digital and creative skills.</li>
+        <li>A blog highlighting local cultural stories and traditions.</li>
+      </ul>
+    </section>
+    <section id="impact">
+      <h2>Social and CCI Impact</h2>
+      <p><strong>Social Impact:</strong> Preserves Nigeria’s rich cultural heritage, empowers young creatives, and promotes digital literacy among youth.</p>
+      <p><strong>CCI Impact:</strong> Builds a network for Nigerian creatives, encourages skill-sharing, and creates a replicable model for digital platforms in the creative and cultural industries.</p>
+    </section>
+    <section id="gallery">
+      <h2>Interactive Gallery</h2>
+      <div class="gallery">
+        <img src="https://via.placeholder.com/300x200?text=Nigerian+Art" alt="Nigerian Art">
+        <img src="https://via.placeholder.com/300x200?text=Traditional+Music" alt="Traditional Music">
+        <img src="https://via.placeholder.com/300x200?text=Cultural+Stories" alt="Cultural Stories">
+      </div>
+    </section>
+    <section id="forum">
+      <h2>Creatives Forum</h2>
+      <div class="forum-placeholder">
+        <p>Coming Soon: A dedicated space for Nigerian creatives to connect, share ideas, and collaborate on projects.</p>
+      </div>
+    </section>
+    <section id="contact">
+      <h2>Contact Us</h2>
+      <p>Email: info@cultureconnectng.org</p>
+      <p>Follow us on social media for updates!</p>
+    </section>
+  </div>
+  <footer>
+    <p>&copy; 2025 CultureConnect NG. All rights reserved.</p>
+  </footer>
+  <script>
+    document.querySelectorAll('.gallery img').forEach(img => {
+      img.addEventListener('click', () => {
+        alert('View more details about ' + img.alt);
+      });
+    });
+  </script>
+</body>
+</html>
